@@ -11,8 +11,9 @@ TassiloEndRoundMusic = {}
 if SERVER then
 
 	-- == ServerSide: Start == --
-	-- Songs
+	-- Includes
 	include("endroundmusic_songs.lua")
+	include("endroundmusic_commands.lua")
 
 	-- Check if we have songs
 	if table.IsEmpty(TassiloEndRoundMusic.Songs) then
@@ -44,8 +45,14 @@ if SERVER then
 
 	-- End Round: Play cached song
 	hook.Add("TTTEndRound", "EndRoundMusic:TTTEndRound", function()
-		net.Start("EndRoundMusic:PlaySound")
-		net.Broadcast()
+		for _, ply in pairs(player.GetAll()) do
+			if ply:GetPData("EndRoundMusic:Muted", "false") == "true" then continue end
+			net.Start("EndRoundMusic:PlaySound")
+			local volume = tonumber(ply:GetPData("EndRoundMusic:Volume", 100))
+			if not volume then volume = 100 end
+			net.WriteUInt(volume, 8)
+			net.Send(ply)
+		end
 	end)
 
 	-- Request Cache: Just joined player wants to know the current song
@@ -90,6 +97,7 @@ else
 			return
 		end
 
+		TassiloEndRoundMusic.Current.Channel:SetVolume(net.ReadUInt(8) / 100)
 		TassiloEndRoundMusic.Current.Channel:Play()
 		chat.AddText(Color(255, 255, 255), "Now playing: ", TassiloEndRoundMusic.Current.Author, " - ", TassiloEndRoundMusic.Current.Title)
 	end)
