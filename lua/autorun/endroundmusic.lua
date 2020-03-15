@@ -100,6 +100,12 @@ else
 		TassiloEndRoundMusic.Current.Channel:SetVolume(net.ReadUInt(8) / 100)
 		TassiloEndRoundMusic.Current.Channel:Play()
 		chat.AddText(Color(255, 255, 255), "Now playing: ", TassiloEndRoundMusic.Current.Author, " - ", TassiloEndRoundMusic.Current.Title)
+		chat.AddText(
+			Color(255, 255, 255), "You can mute the music with ",
+			Color(52, 152, 219), "!music <mute/unmute>",
+			Color(255, 255, 255), " and change the volume with ",
+			Color(52, 152, 219), "!music volume <0-200>"
+		)
 	end)
 
 	net.Start("EndRoundMusic:RequestCache")
